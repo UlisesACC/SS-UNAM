@@ -1,0 +1,107 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{lmodern}
+\usepackage[margin=2.6cm]{geometry}
+\usepackage{amsmath,booktabs}
+\usepackage[hidelinks]{hyperref}
+
+% Completar con los datos del registro oficial de servicio social.
+\newcommand{\alumno}{Ulises Abdiel Cabello Cárdenas}
+\newcommand{\carrera}{Matemáticas}
+\newcommand{\programa}{Pendiente de confirmar}
+\newcommand{\claveprograma}{Pendiente de confirmar}
+\newcommand{\dependencia}{Pendiente de confirmar}
+\newcommand{\responsable}{Pendiente de confirmar}
+\newcommand{\periodo}{Pendiente de confirmar}
+\newcommand{\horas}{Pendiente de confirmar}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+{\Large\bfseries Universidad Nacional Autónoma de México\par}
+\vspace{0.35cm}
+{\large Facultad de Ciencias\par}
+\vfill
+{\LARGE\bfseries Informe final de servicio social\par}
+\vspace{0.6cm}
+{\Large Pronóstico de generación eléctrica horaria mediante modelos de regresión lineal\par}
+\vfill
+\begin{tabular}{@{}lp{0.59\textwidth}@{}}
+\textbf{Prestador} & \alumno \\
+\textbf{Licenciatura} & \carrera \\
+\textbf{Programa} & \programa \\
+\textbf{Clave} & \claveprograma \\
+\textbf{Dependencia receptora} & \dependencia \\
+\textbf{Responsable} & \responsable \\
+\textbf{Periodo} & \periodo \\
+\textbf{Horas acreditadas} & \horas \\
+\end{tabular}
+\vfill
+Ciudad de México
+\end{titlepage}
+
+\section*{Informe final de actividades}
+
+\section{Introducción}
+
+Los registros horarios de generación eléctrica permiten estudiar la evolución de la producción y evaluar métodos de pronóstico a corto plazo. En este informe se documenta la preparación de una serie horaria del área de Baja California (BCA) y la comparación de cuatro modelos de regresión para estimar la generación de la siguiente hora. Los registros provienen de los datos del Centro Nacional de Control de Energía (CENACE) utilizados en el proyecto de tesis.
+
+El objetivo de las actividades fue construir una comparación reproducible de mínimos cuadrados ordinarios (OLS), Ridge, Lasso y Elastic Net. Se utilizó OLS como referencia y se estudió el efecto de la regularización sobre el error al emplear muchos rezagos y un número reducido de ejemplos por ajuste.
+
+\section{Descripción de las actividades desarrolladas}
+
+\subsection{Primera etapa: revisión y preparación de los datos}
+
+Se identificaron la marca temporal, el área y la generación eléctrica en MWh dentro de \texttt{datos.csv}. Se seleccionó el área BCA y se delimitó el periodo del 1 de enero al 31 de diciembre de 2022. Después de ordenar los registros, se conservaron los primeros 6\,001, correspondientes al 70\,\% inicial de la serie seleccionada. La evaluación se realizó dentro de ese subconjunto mediante ventanas móviles.
+
+Se comprobó que cada ejemplo reuniera 24 observaciones previas y una respuesta separadas por intervalos de una hora. Las ventanas que atravesaban discontinuidades se descartaron. La fecha permitió ordenar y comprobar la continuidad de los registros. Las entradas del comparador fueron los 24 rezagos de generación y la respuesta fue el valor observado en la hora siguiente.
+
+\subsection{Segunda etapa: implementación de los modelos básicos}
+
+Se tomó OLS como modelo base, ajustando un intercepto y un coeficiente por rezago mediante la minimización de los errores cuadrados. Ridge añadió una penalización cuadrática sobre los coeficientes con $\alpha=1.0$. Lasso aplicó una penalización absoluta con $\alpha=0.1$. Elastic Net combinó ambas penalizaciones con $\alpha=0.1$ y una proporción de $0.5$ para el término $L_1$.
+
+El repositorio de tesis también conserva implementaciones individuales de OLS y Ridge. El script \texttt{OLS.py} utiliza 24 rezagos y ajusta el modelo con 24 ejemplos previos. El script \texttt{ridge.py} combina un rezago con variables de calendario, usa 12 filas de entrenamiento por ventana y selecciona la penalización entre cinco valores. Para la comparación del informe se empleó la configuración común descrita arriba y se mantuvieron fijos los parámetros de cada modelo.
+
+\subsection{Tercera etapa: evaluación y documentación}
+
+En cada origen se ajustaron los cuatro modelos con los 24 ejemplos válidos más recientes disponibles en ese momento. Se estimaron los parámetros de estandarización únicamente con las entradas de entrenamiento de cada ajuste. La generación predicha conservó la escala original en MWh.
+
+Se evaluaron los últimos 168 orígenes elegibles. Cada origen aportó una predicción a una hora por modelo. El flujo de trabajo comprendió la selección de la serie, la verificación de continuidad, la construcción de rezagos, el ajuste móvil, el cálculo de métricas y la revisión gráfica de la generación observada frente a la predicha.
+
+\section{Resultados obtenidos}
+
+\subsection{Componentes desarrollados}
+
+El trabajo integró tres componentes. El primero preparó la serie y construyó ejemplos con rezagos horarios. El segundo permitió comparar las cuatro regresiones con las mismas entradas, datos de entrenamiento y horas de evaluación. El tercero reunió las métricas y las trayectorias observadas y predichas. Los scripts y la documentación técnica se encuentran en el repositorio de tesis.\footnote{\href{https://github.com/UlisesACC/Tesis_unam}{Repositorio de la tesis en GitHub}.}
+
+\subsection{Comparación de los pronósticos}
+
+El MAE cuantifica el error absoluto promedio. El RMSE da más peso a los errores grandes. Ambas métricas se expresan en MWh. El coeficiente $R^2$ compara la suma de errores cuadrados con la obtenida al usar la media de las observaciones evaluadas como predicción constante.
+
+\begin{table}[htbp]
+\centering
+\caption{Desempeño en 168 predicciones de generación eléctrica a una hora.}
+\begin{tabular}{lrrr}
+\toprule
+Modelo & MAE (MWh) & RMSE (MWh) & $R^2$ \\
+\midrule
+OLS & 198.8016 & 285.1903 & -0.1096 \\
+Ridge & 93.0581 & 118.6614 & 0.8079 \\
+Lasso & 163.3162 & 226.1509 & 0.3023 \\
+Elastic Net & \textbf{91.1626} & \textbf{116.3124} & \textbf{0.8154} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Elastic Net obtuvo el menor MAE y RMSE. Ridge produjo valores cercanos y redujo el MAE de OLS de 198.80 a 93.06 MWh. Lasso también redujo ambos errores respecto de OLS, aunque presentó errores más altos que los otros dos modelos regularizados. El $R^2$ negativo de OLS indica que su error cuadrático superó al de la referencia constante en los orígenes evaluados.
+
+\section{Conclusiones}
+
+Las actividades permitieron aplicar métodos de regresión a una serie eléctrica real y evaluar su desempeño bajo condiciones comparables. La revisión de la continuidad horaria fue necesaria para garantizar que los rezagos representaran horas consecutivas. El uso de una ventana móvil permitió evaluar cada predicción con información disponible en su origen.
+
+Ridge y Elastic Net presentaron los menores errores en el escenario de Baja California de 2022. Este resultado documenta el beneficio observado de la regularización bajo una configuración de 24 rezagos, 24 ejemplos por ajuste y un horizonte de una hora. Su alcance corresponde a los orígenes y al periodo estudiados.
+
+\end{document}
