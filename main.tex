@@ -4,7 +4,7 @@
 \usepackage[spanish]{babel}
 \usepackage{lmodern}
 \usepackage[margin=2.6cm]{geometry}
-\usepackage{amsmath,booktabs}
+\usepackage{amsmath,booktabs,graphicx,placeins}
 \usepackage[hidelinks]{hyperref}
 
 % Completar con los datos del registro oficial de servicio social.
@@ -97,6 +97,19 @@ Elastic Net & \textbf{91.1626} & \textbf{116.3124} & \textbf{0.8154} \\
 \end{table}
 
 Elastic Net obtuvo el menor MAE y RMSE. Ridge produjo valores cercanos y redujo el MAE de OLS de 198.80 a 93.06 MWh. Lasso también redujo ambos errores respecto de OLS, aunque presentó errores más altos que los otros dos modelos regularizados. El $R^2$ negativo de OLS indica que su error cuadrático superó al de la referencia constante en los orígenes evaluados.
+
+\subsection{Comparación gráfica de la generación observada y pronosticada}
+
+La figura~\ref{fig:comparacion-modelos-lineales} reúne la generación observada y los pronósticos a una hora de OLS, Ridge, Lasso y Elastic Net. El acercamiento muestra aproximadamente del 12 al 15 de agosto de 2022 y permite comparar, en las mismas horas, cómo responde cada modelo a los cambios de generación. Las métricas de la tabla anterior se calcularon sobre los 168 orígenes de evaluación.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth]{figuras/comparacion_una_hora_3dias.png}
+\caption{Generación eléctrica observada y pronosticada por los cuatro modelos lineales en Baja California. Fuente: experimento de pronóstico a una hora del repositorio de tesis.}
+\label{fig:comparacion-modelos-lineales}
+\end{figure}
+
+\FloatBarrier
 
 \section{Conclusiones}
 
