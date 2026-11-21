@@ -59,11 +59,7 @@ Se identificaron la marca temporal, el área y la generación eléctrica en MWh 
 
 Se comprobó que cada ejemplo reuniera 24 observaciones previas y una respuesta separadas por intervalos de una hora. Las ventanas que atravesaban discontinuidades se descartaron. La fecha permitió ordenar y comprobar la continuidad de los registros. Las entradas del comparador fueron los 24 rezagos de generación y la respuesta fue el valor observado en la hora siguiente.
 
-\subsection{Segunda etapa: implementación de los modelos básicos}
-
-Se tomó OLS como modelo base, ajustando un intercepto y un coeficiente por rezago mediante la minimización de los errores cuadrados. Ridge añadió una penalización cuadrática sobre los coeficientes con $\alpha=1.0$. Lasso aplicó una penalización absoluta con $\alpha=0.1$. Elastic Net combinó ambas penalizaciones con $\alpha=0.1$ y una proporción de $0.5$ para el término $L_1$.
-
-El repositorio de tesis también conserva implementaciones individuales de OLS y Ridge. El script \texttt{OLS.py} utiliza 24 rezagos y ajusta el modelo con 24 ejemplos previos. El script \texttt{ridge.py} combina un rezago con variables de calendario, usa 12 filas de entrenamiento por ventana y selecciona la penalización entre cinco valores. Para la comparación del informe se empleó la configuración común descrita arriba y se mantuvieron fijos los parámetros de cada modelo.
+\input{secciones/metodos}
 
 \subsection{Tercera etapa: evaluación y documentación}
 
@@ -110,6 +106,8 @@ La figura~\ref{fig:comparacion-modelos-lineales} reúne la generación observada
 \end{figure}
 
 \FloatBarrier
+
+\input{secciones/graficas}
 
 \section{Conclusiones}
 

@@ -1,0 +1,21 @@
+\subsection{Segunda etapa: implementación de los modelos básicos}
+
+En la comparación común, para pronosticar la generación $y_t$ se usaron los 24 valores observados de $y_{t-24}$ a $y_{t-1}$. Cada regresión estimó un intercepto $\beta_0$ y un coeficiente $\beta_j$ por rezago. Si $z_{t,j}$ es el rezago $j$ estandarizado con el promedio y la desviación del conjunto de entrenamiento de ese ajuste, el pronóstico toma la forma
+\[
+  \widehat y_t = \beta_0 + \sum_{j=1}^{24}\beta_j z_{t,j}.
+\]
+El intercepto recoge el nivel de la serie que estima el modelo cuando los rezagos estandarizados valen cero. Las penalizaciones se aplican a los coeficientes de los rezagos.
+
+\paragraph{Mínimos cuadrados ordinarios (OLS).}
+El ajuste minimiza $\sum_i (y_i-\widehat y_i)^2$ sobre los ejemplos de entrenamiento. Los errores grandes influyen más en la estimación por el uso del cuadrado. Cuando los rezagos contienen información muy parecida y hay pocos ejemplos, cambios pequeños en la ventana pueden producir coeficientes muy distintos. En este estudio, OLS sirve como referencia para medir el efecto de regularizar.
+
+\paragraph{Ridge.}
+Agrega una penalización proporcional a $\sum_j\beta_j^2$. Al penalizar con mayor intensidad los coeficientes de magnitud alta, permite repartir el peso entre rezagos relacionados y reduce la sensibilidad del ajuste. Para la prueba común se usó $\alpha=1.0$.
+
+\paragraph{Lasso.}
+Emplea una penalización proporcional a $\sum_j |\beta_j|$. El ajuste puede llevar algunos coeficientes exactamente a cero y dejar solo parte de los rezagos en la ecuación de pronóstico. Si varios rezagos son similares, la selección puede cambiar de una ventana a otra. En la prueba común se utilizó $\alpha=0.1$.
+
+\paragraph{Elastic Net.}
+Combina las penalizaciones absoluta y cuadrática. La primera permite excluir algunos rezagos y la segunda modera el peso de los que permanecen, incluso cuando varios están correlacionados. La comparación usó $\alpha=0.1$ y una proporción de $0.5$ para el componente $L_1$ bajo la parametrización del estimador.
+
+Las implementaciones individuales del directorio \texttt{root} también se revisaron como parte del servicio social. Sus entradas, tamaños de ventana y parámetros se describen junto con las gráficas de la sección~\ref{sec:graficas-individuales}.
